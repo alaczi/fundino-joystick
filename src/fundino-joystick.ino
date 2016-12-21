@@ -22,7 +22,7 @@
 int buttons[] = { PIN_BUTTON_A, PIN_BUTTON_B, PIN_BUTTON_C, PIN_BUTTON_D, PIN_BUTTON_E, PIN_BUTTON_F };
 
 // button names - for debugging
-char buttonNames[] = {'A', 'B', 'C', 'D', 'E', 'F'}; 
+char buttonNames[] = {'A', 'B', 'C', 'D', 'E', 'F'};
 
 // the centre value of the joystick, can vary per instance
 int medianX = 520;
@@ -61,9 +61,9 @@ void setup() {
   // Sets the timer of the software interrupt
   Timer1.initialize(controllerSampling);
   // Attach the reader function to the interrupt
-  Timer1.attachInterrupt(readController); 
+  Timer1.attachInterrupt(readController);
   // set the pins as input and put them to HIGH
-  for (int i = 0; i < (sizeof(buttons) / sizeof(int)) ; i = i + 1) {
+  for (unsigned int i = 0; i < (sizeof(buttons) / sizeof(int)) ; i = i + 1) {
     pinMode(buttons[i], INPUT);
     digitalWrite(buttons[i], HIGH);
   }
@@ -71,12 +71,12 @@ void setup() {
 
 // read the joystick and button states
 void readController() {
-  controllerState.x = analogRead(PIN_JOY_X); 
+  controllerState.x = analogRead(PIN_JOY_X);
   controllerState.y = analogRead(PIN_JOY_Y);
-  for (int i = 0; i < (sizeof(buttons) / sizeof(int)) ; i = i + 1) {
+  for (unsigned int i = 0; i < (sizeof(buttons) / sizeof(int)) ; i = i + 1) {
     int actualStatus = digitalRead(buttons[i]);
-    // shift the 
-    controllerState.buttonStatuses[i] = controllerState.buttonStatuses[i] << 1;
+    // shift the
+    controllerState.buttonStatuses[i] <<= 1;
     if (actualStatus == HIGH) {
       controllerState.buttonStatuses[i] |= 1u;
     }
@@ -88,14 +88,14 @@ void loop() {
   noInterrupts();
   ControllerState state = controllerState;
   //reset the buttons history
-  memcpy(controllerState.buttonStatuses,resetStatuses, 6); 
+  memcpy(controllerState.buttonStatuses,resetStatuses, 6);
   interrupts();
-  
+
   // Print x axis values
   String output = "Joystick position:" ;
   Serial.println(output + "  x: " + state.x + " y: " + state.y);
   output = "Buttons pressed: ";
-  for (int i = 0; i < (sizeof(buttons) / sizeof(int)) ; i = i + 1) {
+  for (unsigned int i = 0; i < (sizeof(buttons) / sizeof(int)) ; i = i + 1) {
     Serial.print(output);
     Serial.println(state.buttonStatuses[i], BIN);
   }
